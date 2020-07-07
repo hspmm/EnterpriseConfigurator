@@ -1,0 +1,94 @@
+<!-- <div class="container-fluid">
+  <div class="row m-0 text-left" style="margin-top: 40px !important;background: lightgrey">
+    <div class="col-2 border p-3">Plugins</div>
+    <div class="col-3 border p-3">Description</div>
+    <div class="col-2 border p-3">Address</div>
+    <div class="col-1 border p-3">Version</div>
+    <div class="col-1 border p-3">Copyright Info &copy;</div>
+    <div class="col-2 border p-3">Service Status</div>
+    <div class="col-1 border p-3"></div>
+  </div>
+
+
+  <div class="row m-0 hoverStyle text-left" *ngFor="let plugin of detectedPlugins">
+    <div class="col-2 border p-3">{{plugin.Name}}</div>
+    <div class="col-3 border p-3">{{plugin?.Description}}</div>
+    <div class="col-2 border p-3">{{plugin.BaseUrl}}:{{plugin.ServerPort}}</div>
+    <div class="col-1 border p-3">{{plugin.Version}}</div>
+    <div class="col-1 border p-3"> &copy; </div>
+    <div class="col-2 border p-3" style="display:flex">
+      <mat-checkbox color="primary" class="example-margin" [(ngModel)]="plugin.ServicesEnabled"
+        (ngModelChange)="onChangeService(plugin)" [disabled]="plugin.Type === 'Default' || plugin.changeServiceStarted">
+        {{plugin.ServicesEnabled == true ? 'Enabled' : 'Disabled'}}</mat-checkbox>
+      <mat-spinner style="margin:0 auto;zoom:0.25;margin-left: 5%;" *ngIf="plugin.showServiceSpinner === true">
+      </mat-spinner>
+      <mat-icon matSuffix color="warn" *ngIf="plugin.serviceRespStatus === false">error</mat-icon>
+      COMMENT BELOW CODE
+        <mat-checkbox class="example-margin" [(ngModel)]="plugin.ServicesEnabled" (ngModelChange)="onChangeService(plugin)" [disabled]="plugin.Type === 'Default' || updatingPlugin?.started">{{plugin.ServicesEnabled == true ? 'Enabled' : 'Disabled'}}</mat-checkbox>
+        <mat-spinner style="margin:0 auto;zoom:0.25;margin-left: 5%;" *ngIf="showSpinner && plugin.UniqueName === updatingPlugin.UniqueName"></mat-spinner>
+      COMMENT ABOVE CODE
+    </div>
+    <div class="col-1 border p-3" style="display:flex">
+      <button class="col-12 p-0" mat-button color="primary" (click)="restartpluginServices(plugin)"
+        [disabled]="plugin.restartServiceStarted" style="display:inline-block">
+        <mat-icon matPrefix color="warn" *ngIf="plugin.restartRespStatus === false">error</mat-icon>
+        <mat-icon matPrefix *ngIf="plugin.showRestartSpinner != true">refresh</mat-icon>
+        <mat-spinner matPrefix style="margin:0 auto;zoom:0.2;margin-left: 5%;position: absolute;top: 25%;"
+          *ngIf="plugin.showRestartSpinner === true"></mat-spinner>
+        Restart
+      </button>      
+    </div>
+  </div>
+
+</div> -->
+
+
+
+<div class="container-fluid">
+  <div class="loader-4" *ngIf="!detectedPlugins">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <table class="plugin_status table-responsive-sm" *ngIf="detectedPlugins" id="plugin_status ">
+    <thead>
+      <tr>
+        <th>Plugins</th>
+        <th>Description</th>
+        <th>Address</th>
+        <th>Version</th>
+        <th>Copyright Info &copy;</th>
+        <th>Service Status</th>
+        <th></th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let plugin of detectedPlugins">
+        <td>{{plugin.Name}}</td>
+        <td>{{plugin?.Description}}</td>
+        <td>{{plugin.BaseUrl}}:{{plugin.ServerPort}}</td>
+        <td>{{plugin.Version}}</td>
+        <td>&copy;</td>
+        <td >
+          <mat-checkbox color="primary" id="enableDisabledPlugin" class="example-margin" [(ngModel)]="plugin.ServicesEnabled"
+            (ngModelChange)="onChangeService(plugin)" [disabled]="(plugin.Type  === 'default' || plugin.Type  === 'Default'|| plugin.changeServiceStarted) || !userPrivileges.managePluginServices">
+            {{plugin.ServicesEnabled == true ? 'Enabled' : 'Disabled'}}
+          </mat-checkbox>
+          <mat-spinner style="margin:0 auto;zoom:0.25;margin-left: 5%;" *ngIf="plugin.showServiceSpinner === true"></mat-spinner>
+          <mat-icon matSuffix color="warn" *ngIf="plugin.serviceRespStatus === false">error</mat-icon>
+        </td>
+        <td >
+          <button class="col-12 p-0" id="restartPlugin" mat-button color="primary" (click)="restartpluginServices(plugin)" [disabled]="plugin.restartServiceStarted || !userPrivileges.managePluginServices" style="display:inline-block">
+            <mat-icon matPrefix color="warn" *ngIf="plugin.restartRespStatus === false">error</mat-icon>
+            <mat-icon matPrefix *ngIf="plugin.showRestartSpinner != true">refresh</mat-icon>
+            <mat-spinner matPrefix style="margin:0 auto;zoom:0.2;margin-left: 5%;position: absolute;top: 25%;" *ngIf="plugin.showRestartSpinner === true"></mat-spinner>
+            Restart
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+</div>

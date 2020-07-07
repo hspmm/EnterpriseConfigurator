@@ -1,0 +1,257 @@
+<ng-container *ngIf="showSpinner; else showDashboard">
+  <div class="loader-4">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</ng-container>
+
+
+<ng-template #showDashboard>
+  <div class="app-dashboard-container" style="background:lightgray;">
+    <ng-container *ngIf="heirarchyTree">
+      <div class="row m-0 align-items-center app-utilities-bar">
+        <button class="app-button-color mt-3 mb-3 ml-3 text-truncate overflow-hidden" style="outline:none;border-radius:19px"
+          id="openListOfFacilities" mat-raised-button (click)="showFacilitiesList()">
+          <mat-icon>list</mat-icon>
+          Facilities
+        </button>
+        <span class="menu-spacer"></span>
+        <p *ngIf="detectedPlugins && (detectedPlugins.length < 1)" style="color: red;"><strong>No plugins found</strong>
+        </p>
+        <div *ngFor="let detectedPlugin of detectedPlugins | pluginInstance:AppLocalKeys?.privileges">
+          <img matTooltip="{{detectedPlugin.Name}}" id="goToSingleInstancePlugin" [src]="renderPluginUrl(detectedPlugin.IconUrl)"
+            onError="this.src='assets/icons/default-icon.png'" class="mr-2 plugin-icons" alt="{{detectedPlugin.Name}}"
+            (click)="selectedSingleInstanceApplication(detectedPlugin)">
+        </div>
+      </div>
+
+
+
+      <div class="row m-0 app-main-content" style="background: white;height: 84.5vh;">
+        <div class="success-popup" *ngIf="displayToast?.show"
+          [ngClass]="{'error-popup-bg': displayToast.success === false}">
+          <p>{{displayToast.message}}</p>
+        </div>
+        <as-split direction="{{splitDirection}}">
+          <as-split-area size="25" class="left-split-area">
+            <div class="row m-0 justify-content-center align-items-center">
+              <div class="col-xl-11 col-lg-11 col-11 m-0 mt-2">
+                <mat-form-field appearance="outline" class="w-100 pb-0 search-box">
+                  <mat-label>Search</mat-label>
+                  <input matInput placeholder="Search in Hierarchy" maxlength="128" autocomplete="off" [(ngModel)]="searchText"
+                    (input)="searchInHierarchy($event.target.value)" id="hierarchyTreeSearchBox">
+                  <mat-icon matSuffix *ngIf="!showSearchList">search</mat-icon>
+                  <mat-icon matSuffix class="search-close-icon" id="clearSearchBox" *ngIf="showSearchList"
+                    (click)="searchInHierarchy('');searchText=''">close</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <hr class="mt-2" *ngIf="!showSearchList">
+
+  <!--------------------------- BOC WITH DRAG AND DROP FUNCTIONALITY ------------------------------------------------------------->
+            <!-- <mat-tree [dataSource]="dataSource" #tree [treeControl]="treeControl" *ngIf="expandTreeView && showHierarchyTree" class="app-tree-scroll-content col-sm-12">
+              <mat-tree-node draggable="true" (dragstart)="handleDragStart($event, node);"
+                (dragover)="handleDragOver($event, node);" (drop)="handleDrop($event, node);"
+                (dragend)="handleDragEnd($event);" (dragover)="handleDragOver($event, node);" id="child-{{node.NodeID}}"
+                *matTreeNodeDef="let node" class="tree-node" matTreeNodeToggle matTreeNodePadding
+                [ngClass]="{'selected-node': node.Uid == selectedNode?.Uid}" (click)="userSelectedNode(node)">
+                <button class="add-element-icon" mat-icon-button matTreeNodeToggle
+                  [attr.aria-label]="'toggle ' + node.filename">
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{hasChild(node.level,node) ? treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' : ''}}
+                  </mat-icon>
+                </button>
+                <li [ngClass]="{'drop-above': dragNodeExpandOverArea === 'above' && dragNodeExpandOverNode === node,
+                'drop-below': dragNodeExpandOverArea === 'below' && dragNodeExpandOverNode === node,
+                'drop-center': dragNodeExpandOverArea === 'center' && dragNodeExpandOverNode === node}"
+                  matTooltip="{{node.NodeName}}" matTooltipPosition="after" class="rounded tree-font list-text-wrap">
+                  <img [src]="'data:image/jpg;base64,' + node.icon" onError="this.src='assets/icons/default-icon.png'"
+                    class="mr-2 image-width">
+                  {{node.NodeName}}
+                </li>
+                <div class="hierarchy-tree-icons-content" *ngIf="userPrivileges?.addHierarchyTree || userPrivileges?.deleteHierarchyTree">
+                  <mat-icon *ngIf="userPrivileges?.addHierarchyTree" class="hierarchy-icons add-icon" (click)="addElement(node)" matTooltip="Add" id="addRegion">
+                    add_circle</mat-icon>
+
+                  <mat-icon *ngIf="userPrivileges?.deleteHierarchyTree" class="hierarchy-icons delete-icon" (click)="removeElement(node)" matTooltip="Delete">delete</mat-icon>
+                </div>
+              </mat-tree-node>
+
+              <mat-tree-node draggable="true" (dragstart)="handleDragStart($event, node);"
+                (dragover)="handleDragOver($event, node);" (drop)="handleDrop($event, node);"
+                (dragend)="handleDragEnd($event);" (dragover)="handleDragOver($event, node);"
+                id="parent-{{node.NodeID}}" *matTreeNodeDef="let node; when: hasChild" class="tree-node"
+                matTreeNodePadding [ngClass]="{'selected-node': node.Uid == selectedNode?.Uid}"
+                (click)="userSelectedNode(node)">
+                <button class="add-element-icon" mat-icon-button matTreeNodeToggle
+                  [attr.aria-label]="'toggle ' + node.filename">
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{hasChild(node.level,node) ? treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' : ''}}
+                  </mat-icon>
+                </button>
+                <li [ngClass]="{'drop-above': dragNodeExpandOverArea === 'above' && dragNodeExpandOverNode === node,
+                'drop-below': dragNodeExpandOverArea === 'below' && dragNodeExpandOverNode === node,
+                'drop-center': dragNodeExpandOverArea === 'center' && dragNodeExpandOverNode === node}"
+                  matTooltip="{{node.NodeName}}" matTooltipPosition="after" class="rounded tree-font list-text-wrap">
+                  <img [src]="'data:image/jpg;base64,' + node.icon" onError="this.src='assets/icons/default-icon.png'"
+                    class="mr-2 image-width">
+                  {{node.NodeName}}
+                </li>
+                <div class="hierarchy-tree-icons-content">
+                  <mat-icon class="hierarchy-icons expand-icon"
+                    (click)="treeControl.isExpanded(node) ? treeControl.collapseDescendants(node) : treeControl.expandDescendants(node)"
+                    matTooltip="{{treeControl.isExpanded(node) ? 'Collapse' : 'Expand'}}" id="addRegion">
+                    {{treeControl.isExpanded(node) ? 'unfold_less' : 'unfold_more'}}</mat-icon>
+                  <mat-icon class="hierarchy-icons add-icon" (click)="addElement(node)" matTooltip="Add" id="addRegion"
+                  *ngIf="userPrivileges?.addHierarchyTree">add_circle</mat-icon>
+
+                  <mat-icon class="hierarchy-icons delete-icon" matTooltip="Delete" (click)="removeElement(node)"
+                  *ngIf="userPrivileges?.deleteHierarchyTree">delete</mat-icon>
+                </div>
+              </mat-tree-node>
+            </mat-tree> -->
+  <!--------------------------- EOC WITH DRAG AND DROP FUNCTIONALITY ------------------------------------------------------------->
+            <mat-tree [dataSource]="dataSource" #tree [treeControl]="treeControl" *ngIf="expandTreeView && showHierarchyTree" class="app-tree-scroll-content col-sm-12">
+              <mat-tree-node id="child-{{node.NodeID}}" *matTreeNodeDef="let node" class="tree-node" matTreeNodeToggle matTreeNodePadding
+                [ngClass]="{'selected-node': node.Uid == selectedNode?.Uid}" (click)="userSelectedNode(node)">
+                <button id="expandColapseToggle" class="add-element-icon" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{hasChild(node.level,node) ? treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' : ''}}
+                  </mat-icon>
+                </button>
+                <ul class="p-0 mb-0 mt-0 list-text-wrap">
+                  <li matTooltip="{{node.NodeName}}" matTooltipPosition="after" class="rounded tree-font list-text-wrap">
+                    <img [src]="'data:image/jpg;base64,' + node.icon" onError="this.src='assets/icons/default-icon.png'" alt="{{node.NodeName}}"
+                      class="mr-2 image-width">
+                    {{node.NodeName}}
+                  </li>
+                </ul>
+
+                <div class="hierarchy-tree-icons-content" *ngIf="userPrivileges?.addHierarchyTree || userPrivileges?.deleteHierarchyTree">
+                  <mat-icon *ngIf="hasChild(node.level,node)" class="hierarchy-icons expand-icon" matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename"
+                  matTooltip="{{hasChild(node.level,node) ? 'Collapse' : 'Expand'}}" id="expandColapseHierarchyTreeNode">
+                  {{hasChild(node.level,node) ? treeControl.isExpanded(node) ? 'unfold_less' : 'unfold_more' : ''}}</mat-icon>
+                  <mat-icon *ngIf="userPrivileges?.addHierarchyTree" class="hierarchy-icons add-icon" (click)="addElement(node)" matTooltip="Add" id="addNodeToHierarchyTree">
+                    add_circle
+                  </mat-icon>
+                  <mat-icon *ngIf="userPrivileges?.deleteHierarchyTree" class="hierarchy-icons delete-icon" (click)="removeElement(node)" id="deleteNodeFromHierarchyTree" matTooltip="Delete">delete</mat-icon>
+                </div>
+              </mat-tree-node>
+
+              <mat-tree-node id="parent-{{node.NodeID}}" *matTreeNodeDef="let node; when: hasChild" class="tree-node" matTreeNodePadding 
+              [ngClass]="{'selected-node': node.Uid == selectedNode?.Uid}" (click)="userSelectedNode(node)">
+                <button id="expandColapseToggle" class="add-element-icon" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{hasChild(node.level,node) ? treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' : ''}}
+                  </mat-icon>
+                </button>
+                <ul class="p-0 mb-0 mt-0 list-text-wrap">
+                  <li matTooltip="{{node.NodeName}}" matTooltipPosition="after" class="rounded tree-font list-text-wrap">
+                    <img [src]="'data:image/jpg;base64,' + node.icon" onError="this.src='assets/icons/default-icon.png'" class="mr-2 image-width" alt="{{node.NodeName}}">
+                    {{node.NodeName}}
+                  </li>
+                </ul>
+
+                <div class="hierarchy-tree-icons-content">
+                  <mat-icon class="hierarchy-icons expand-icon" (click)="treeControl.isExpanded(node) ? treeControl.collapseDescendants(node) : treeControl.expandDescendants(node)"
+                    matTooltip="{{treeControl.isExpanded(node) ? 'Collapse' : 'Expand'}}" id="expandColapseHierarchyTreeNode">
+                    {{treeControl.isExpanded(node) ? 'unfold_less' : 'unfold_more'}}</mat-icon>
+                  <mat-icon class="hierarchy-icons add-icon" (click)="addElement(node)" matTooltip="Add" id="addNodeToHierarchyTree" *ngIf="userPrivileges?.addHierarchyTree">
+                    add_circle
+                  </mat-icon>
+                  <mat-icon class="hierarchy-icons delete-icon" matTooltip="Delete" (click)="removeElement(node)" id="deleteNodeFromHierarchyTree" 
+                  *ngIf="userPrivileges?.deleteHierarchyTree">delete</mat-icon>
+                </div>
+              </mat-tree-node>
+            </mat-tree>
+
+            <div *ngIf="showSearchList">
+              <p *ngFor="let list of searchedHierarchyList" id="goToSelectedNodeInHierarchyTree" (click)="selectedTreeNode(list)" class="searched-list">
+                <img [src]="'data:image/jpg;base64,' + list.icon" class="mr-2" style="width:2.5rem" alt="{{list.NodeName}}">
+                {{list.NodeName}} </p>
+            </div>
+          </as-split-area>
+
+          <as-split-area size="75" class="right-split-area">
+
+            <div class="row col-11 justify-content-center card-form" *ngIf="showNodeForm">
+              <mat-form-field class="col-11 col-md-6  mt-2 " *ngIf="selectedNode?.ParentID != null" appearance="outline">
+                <mat-label>Type of Service</mat-label>
+                <mat-select [(ngModel)]="assignedLevelType" id="changeTypeOfService">
+                  <h6 class="plugin-title"
+                    style="font-size: 14px;background-color: #036bc0; height: 34px; padding: 7px;color: #fff;">Groups
+                  </h6>
+                  <ng-container *ngFor="let assignedLevelType of hierarchyLevelSettings">
+                    <mat-option [value]="assignedLevelType"
+                      *ngIf="hierarchyLevelSettings[hierarchyLevelSettings.length-1].LevelType != assignedLevelType.LevelType">
+                      {{assignedLevelType.Name}}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+              
+              <form class="py-2 col-11" [formGroup]="NodeInfo" (ngSubmit)="onSubmitNodeInfoForm(NodeInfo.value.Name, NodeInfo.value,AdditoinalPropertiesForm)">
+
+                  <mat-form-field class="w-100">
+                    <input matInput placeholder="Name" #Name maxlength="128" type="text" id="nodeName" name="name"
+                      formControlName="Name" required>
+                      <mat-hint align="end">{{Name.value.length}} / 128</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field class="w-100" appearance="outline">
+                    <mat-label>Notes</mat-label>
+                    <textarea matInput type="text" id="nodeNotes" name="notes" #Notes maxlength="256" formControlName="Notes"></textarea>
+                    <mat-hint align="end">{{Notes.value.length}} / 256</mat-hint>
+                  </mat-form-field>
+
+                  <!-------------------------- Dynamic form ---------------------------->
+
+                  <!-- <form [formGroup]="AdditoinalPropertiesForm" *ngIf="additionalPropertiesFields?.length > 0">
+                    <div *ngFor="let question of additionalPropertiesFields">
+                      <app-dynamic-form [question]="question" [form]="AdditoinalPropertiesForm"></app-dynamic-form>
+                    </div>
+                  </form> -->
+
+                  <!-------------------------- Dynamic form ---------------------------->
+
+
+                  <button class="app-button-color" style="margin-left: 42%;" type="submit" mat-raised-button mat-button [disabled]="!NodeInfo.valid || !(userPrivileges?.editHierarchyTree)" id="updateNode">
+                    <span *ngIf="!showProgressSpinner">Update</span>
+                    <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;"></mat-spinner>
+                  </button>
+              </form>
+            </div>
+
+            <div *ngIf="showIframe" style="padding: 0;overflow: auto;">
+              <div class="loader-4" *ngIf="showIframeLoader">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div *ngIf="selectedNodeUrl">
+                <iframe [src]="selectedNodeUrl" height="100%" width="100%" name="iframe_a" id="pluginiframe" title="selectedNode.NodeName"
+                  (load)="onLoadSuccess($event)" style="border:0px;height: 75vh;"></iframe>
+                <button class="flex app-button-color" *ngIf="!hideUpdateBtnWhenMSAS" style="margin-left: 42%;"
+                  type="button" [disabled]="!(userPrivileges?.editHierarchyTree)" mat-raised-button color="primary" (click)="UpdatePluginFormData()" id="updateNode">
+                  <span *ngIf="!showProgressSpinner">Update</span>
+                  <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;"></mat-spinner>
+                </button>
+              </div>
+            </div>
+
+            <app-add-facilities *ngIf="showFacility" style="overflow: auto;" [FacilitySpinnerRes]="FacilitySpinnerRes"
+              [facilityFormInfo]="facilityFormData"
+              (updatedFacility)="onSubmitNodeInfoForm($event?.nodeName, $event?.data, $event?.additionalPropertiesForm)">
+            </app-add-facilities>
+          </as-split-area>
+        </as-split>
+      </div>
+
+    </ng-container>
+
+  </div>
+</ng-template>

@@ -1,0 +1,86 @@
+.register-plugin-link{
+    color: var(--ec-color);
+    &:hover{
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+
+/* .success-popup{
+  position: absolute;
+  width: 15%;
+  padding: .5%;
+  background: #70a470;
+  color: white;
+  text-align: center;
+  right: 0.5%;
+  top: 10%;
+  transition: all 0.4s ease;
+  box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+}
+
+.error-popup-bg{
+  background: #ec6b78;
+} */
+
+::ng-deep{
+  .mat-dialog-content{
+    max-height: 80vh !important;
+  }
+}
+
+.example-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .example-container > * {
+    width: 100%;
+  }
+  
+  .example-container form {
+    margin-bottom: 20px;
+  }
+  
+  .example-container form > * {
+    margin: 5px 0;
+  }
+
+.add-element-footer{
+  margin-left: -23px;
+  margin-right: -23px;
+  padding-right: 23px;
+}
+
+
+.form-length{
+  width: 300px !important;
+  }
+  
+  @media only screen and (max-width: 600px) {
+  .form-length{
+    width: 200px !important;
+  }
+  }
+  
+  @media (min-width: 600px) {
+  .form-length{
+    width: 220px !important;
+  }
+  }
+
+  .card-form{
+    margin: 2em auto;
+    padding: 1em 2em 1em 2em;
+    background: #fafafa;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+    box-shadow: rgba(0,0,0,0.14902) 0px 1px 1px 0px,rgba(0,0,0,0.09804) 0px 1px 2px 0px;
+  }
+
+  .navigate-to-settings-page{
+    color: blue;
+    &:hover{
+      cursor: pointer;
+    }
+  }

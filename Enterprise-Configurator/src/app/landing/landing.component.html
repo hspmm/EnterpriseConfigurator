@@ -1,0 +1,83 @@
+<div class="bg">
+    <div class="success-popup" *ngIf="displayToast?.show" [ngClass]="{'error-popup-bg': displayToast.success === false}">
+        <mat-icon class="toaster-popup-close" (click)="closeToast()">close</mat-icon>
+        <p>{{displayToast.message}}</p>
+    </div>
+
+    <div class="header">
+
+        <!--Content before waves-->
+        <div class="inner-header flex">
+            <!--Just the logo.. Don't mind this-->
+            <div class="product-title">
+                <img class="logo-img" src="assets/logo-white-icu-medical.svg" alt="ICU Medical">
+                <hr>
+                <h1>Enterprise Configurator</h1>
+            </div>
+        </div>
+        <!--Waves Container-->
+        <div>
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave"
+                        d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                </g>
+            </svg>
+        </div>
+        <!--Waves end-->
+
+    </div>
+    <!--Header ends-->
+
+    <div class="row" >
+        <div class="login-content">
+            <div class="arrow-shadow"></div>
+            <div class="arrow"></div>
+            <!-- <h3 class="login-form" *ngIf="AuthTypes?.length == 0" style="color: red;margin-top:102px;">Enterprise Configurator Server down or under maintenance</h3> -->
+            <div class="login-form">
+                <div class="title">
+                    <p><span>Login</span></p>
+
+                    <hr>
+                    <hr class="short">
+                </div>
+                <br>
+                <form [formGroup]="SigninForm" #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+                    <div class="col-7" style="margin: 15px -10px;">
+                        <mat-form-field class="form-length">
+                            <input matInput placeholder="User Name" type="text" id="userName" formControlName="userName" name="uname">
+                            <mat-error *ngIf="!SigninForm.hasError('required')">Enter a valid Username</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="form-length">
+                            <input id="password" matInput placeholder="Password" formControlName="password" [type]="hidePassword ? 'password' : 'text'" name="password">
+
+                            <span mat-icon-button matSuffix id="showPassword" (mouseup)="showPassword(false)" (mousedown)="showPassword(true)">
+                                <mat-icon class="hide-password-icon" [ngClass]="{'highlight-password-icon': !hidePassword}" id="hawkKey">
+                                    {{hidePassword ? 'visibility_off' : 'visibility'}}
+                                </mat-icon>
+                            </span>
+                            <mat-error *ngIf="!SigninForm.hasError('required')">Password can't be empty</mat-error>
+                        </mat-form-field>
+                        <button class="col-5" mat-raised-button id="loginButton" type="submit" [disabled]="!SigninForm.valid" style="background-color: #036bc0; color: #fff; margin: 5px 0px;" name="loginbutton">
+                            <span>Login &nbsp;</span>
+                            <mat-spinner matSuffix color="accent" *ngIf="showSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 11%;"></mat-spinner>
+                            <mat-icon matSuffix *ngIf="!showSpinner">keyboard_arrow_right</mat-icon>
+                        </button>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- (EOC) ROACH CHANGES -->

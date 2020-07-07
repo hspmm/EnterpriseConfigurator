@@ -1,0 +1,83 @@
+<div class="app-dashboard-container" style="padding-bottom: 3rem;padding-top: 3rem;overflow: hidden;">
+  <ng-container *ngIf="!serverConnectionError">
+    <div class="row justify-content-center">
+      <div class="success-popup" *ngIf="displayToast?.show" [ngClass]="{'error-popup-bg': displayToast.success === false}">
+        <p>{{displayToast.message}}</p>
+      </div>
+      <div class="col-xl-9 col-lg-9 col-md-9 col-12">
+        <form class="col align-self-center" [formGroup]="HeirarchyForm" style="background: white;" (ngSubmit)="onSubmit(HeirarchyForm.controls.levels)">
+
+          <div class="row align-items-center" style="background: white;">
+            <div class="col-8 text-center border p-2" ><strong> Groups </strong></div>
+            <div class="col-2 text-center border p-2" ><strong> Icon </strong></div>
+            <div class="col-2 text-center border " style="padding:1.25rem !important"></div>
+          </div>
+          <div formArrayName="levels">
+            <div *ngFor="let level of HeirarchyForm.get('levels')['controls']; let i=index">
+              <div class="row" [formGroupName]="i">
+                <div class="col-8 border">
+                  <mat-form-field  [ngStyle]="setStyle(i)" >
+                    <input matInput placeholder="Level" type="text" id="levelName-{{i}}" formControlName="Name" required>
+                  </mat-form-field>
+                </div>
+                <div class="col-2 border" >
+                  <div class="col-12 edit-icon">
+                    <img [src]="HeirarchyForm.controls.levels.value[i].Image" class="icon" onError="this.src='assets/icons/IconRegion.jpg';" alt="icon">
+                    <span class="on-hover-icon">Edit</span>
+                    <input type="file" id="uploadLevelIcon-{{i}}" name="myfile" accept="image/png,image/jpeg" formControlName="Icon" (change)="onFileChange($event,i,HeirarchyForm.controls.levels)" />
+                  </div>
+                  <!-- <p style="color: red;font-size: 12px;" class="m-0" *ngIf="i == selectedFileIndex && iconSizeIsLarge">icon size shouldn't exceeded 1MB</p>
+                  <p style="color: red;font-size: 12px;" class="m-0" *ngIf="i == selectedFileIndex && iconResolutionIsLarge">icon Resolution shouldn't exceed 90x90</p> -->
+                </div>
+                <div class="col-2 border p-0 text-center">
+                  <button id="addLevel-{{i}}" mat-icon-button type="button" color="primary" class="add-level-icon" [disabled]="LevelIndex == i ? true : false" (click)="addLevel(HeirarchyForm.controls.levels,i)" >
+                    <mat-icon  >add_circle</mat-icon>
+                  </button>
+                  <button id="removeLevel-{{i}}" mat-icon-button type="button" [disabled]="(LevelIndex == i ? true : false) || (level.value.Id=='' ? true : false)" class="remove-level-icon" color="warn" (click)="RemoveLevel(i)">
+                    <mat-icon>remove_circle</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="col-2 mb-4 mt-4 login-btn" style="margin-left:40%;" id="updateHierarchyLevels" [disabled]="(!(userPrivileges?.manageHierarchyLevels) && !HeirarchyForm.valid)" type="submit" mat-raised-button>{{hierarchyLevels?.length > 0 ? 'Update' : 'Save'}}</button> 
+        </form>
+      </div>
+<!--       <div class="col-xl-3 col-lg-3 col-md-3 d-none d-sm-none d-md-flex">
+        <mat-tree [dataSource]="dataSource" #tree [treeControl]="treeControl">
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+            <button mat-icon-button disabled></button>
+            <ul class="p-0 mb-0 mt-0">
+              <li style="list-style:none;" class="p-2 rounded tree-font">
+                <img [src]="node.icon" class="mr-2 image-width" onError="this.src='assets/icons/IconRegion.jpg';" alt="{{node.name}}">
+                {{node.name}}
+              </li>
+            </ul>
+          </mat-tree-node>
+
+          <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+            <button class="add-element-icon" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+              <mat-icon class="mat-icon-rtl-mirror">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button> 
+            <ul class="p-0 mb-0 mt-0">
+              <li style="list-style:none;" class="p-2 rounded tree-font">
+                <img [src]="node.icon" class="mr-2 image-width" onError="this.src='assets/icons/IconRegion.jpg';" alt="{{node.name}}">
+                {{node.name}}
+              </li>
+            </ul>
+          </mat-tree-node>
+        </mat-tree>
+      </div> -->
+    </div>
+    </ng-container>
+
+    <ng-container *ngIf="serverConnectionError">
+      <div >
+        <h2 class="text-center">Server Connection Error</h2>
+        <p class="text-center">ERR_CONNECTION_REFUSED</p>
+      </div>
+    </ng-container>
+</div>

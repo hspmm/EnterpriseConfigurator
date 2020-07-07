@@ -1,0 +1,144 @@
+<div class="success-popup" *ngIf="showErrMsg?.show" [ngClass]="{'error-popup-bg': showErrMsg?.status == false}">
+  <p>{{showErrMsg?.message}}</p>
+</div>
+
+<!-- ------------------------ Dynamic form --------------------------    
+  <form class="w-100"  [formGroup]="AdditoinalPropertiesForm" >
+    <div *ngFor="let question of additionalPropertiesFields">
+      <app-dynamic-form [question]="question" [form]="AdditoinalPropertiesForm"></app-dynamic-form>
+    </div>                      
+  </form>          
+------------------------ Dynamic form -------------------------- -->
+
+<form [formGroup]="AddFacilityForm">
+  <div class="card-form col-11">
+    <div class="row m-0">
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Facility Name" type="text" id="FacilityName" name="FacilityName"
+          (input)="sendValid($event.target.value)" #FacilityName maxlength="128" formControlName="FacilityName"
+          required>
+        <mat-hint align="end">{{FacilityName.value.length}} / 128</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="AddressLine 1" type="text" id="AddressLine1" name="AddressLine1"
+          formControlName="AddressLine1">
+      </mat-form-field>
+    </div>
+
+    <div class="row m-0">
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="AddressLine 2" type="text" id="AddressLine2" name="AddressLine2"
+          formControlName="AddressLine2">
+      </mat-form-field>
+
+
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="AddressLine3" type="text" id="AddressLine3" name="AddressLine3"
+          formControlName="AddressLine3">
+      </mat-form-field>
+    </div>
+
+    <div class="row m-0">
+      <mat-form-field class="col-6  mt-2 ">
+        <mat-label>Country</mat-label>
+        <mat-select formControlName="Country" id="selectCountry"
+          (selectionChange)="getStatesByCountry($event.value);sendValid($event.value)" required>
+          <ng-container *ngFor="let country of fCountries">
+            <mat-option [value]="country.id">
+              {{country.name}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="col-6  mt-2 ">
+        <mat-label>State</mat-label>
+        <mat-select formControlName="State" id="selectState"
+          (selectionChange)="getCitiesByState($event.value);sendValid($event.value)" required>
+          <ng-container *ngFor="let state of fStates">
+            <mat-option [value]="state.id">
+              {{state.name}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+
+
+    <div class="row m-0">
+      <mat-form-field class="col-6  mt-2 ">
+        <mat-label>City</mat-label>
+        <mat-select formControlName="City" id="selectCity" (selectionChange)="sendValid($event.value)" required>
+          <ng-container *ngFor="let city of fCities">
+            <mat-option [value]="city.id">
+              {{city.name}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Postal/Zip Code" type="text" id="PostalCode" name="PostalCode"
+          formControlName="PostalCode">
+      </mat-form-field>
+    </div>
+  </div>
+
+
+  <div class="col-11 card-form">
+    <div class="row m-0">
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="IP Range" type="text" id="IPRange" name="IPRange" formControlName="IPRange">
+      </mat-form-field>
+
+      <mat-form-field class="col-6  mt-2 ">
+        <mat-label>Facility Status</mat-label>
+        <mat-select formControlName="Status" id="facilityStatus">
+          <ng-container>
+            <mat-option *ngFor="let status of fStatus" [value]="status">
+              {{status}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <p>IP Range CIDR Notation format must be IPAddress/Netmask(e.g. 192.168.100.0/24)</p>
+  </div>
+
+  <div class="col-11 card-form">
+    <div class="row m-0">
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Contact" type="text" id="Contact" name="Contact" formControlName="Contact">
+      </mat-form-field>
+
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Email" type="email" id="Email" name="Email" formControlName="Email">
+        <mat-error *ngIf="!AddFacilityForm.hasError('email')">Enter a valid email</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row m-0">
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Department" type="text" id="Department" name="Department"
+          formControlName="Department">
+      </mat-form-field>
+
+      <mat-form-field class="col-6 col-xs-12">
+        <input matInput placeholder="Phone" type="number" id="Phone" name="Phone" maxlength="15" formControlName="Phone">
+        <mat-error *ngIf="AddFacilityForm.controls.Phone.hasError('pattern')">Mobile Number should be
+          10 digit number
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <button mat-raised-button class="flex app-button-color" style="margin-left: 42%;" type="button"
+    (click)="UpdateFacility()" *ngIf="facilityFormInfo" id="updateFacility" [disabled]="AddFacilityForm.invalid">
+    <span *ngIf="!showProgressSpinner"> {{facilityFormInfo ? 'Update' : 'Save'}}</span>
+    <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;">
+    </mat-spinner>
+  </button>
+  
+</form>

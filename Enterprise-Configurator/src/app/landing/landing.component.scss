@@ -1,0 +1,446 @@
+
+/* .img-center-fit {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: left;
+}
+
+.signIn-header{
+    background-color: var(--ec-color);
+    color: white;
+}
+
+.login-btn{
+    @extend .signIn-header;
+}
+
+.success-popup{
+    position: absolute;
+    width: 20%;
+    padding: .5%;
+    background: #70a470;
+    color: white;
+    text-align: center;
+    right: 1%;
+    transition: all 0.4s ease;
+    box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+    top : 3%;
+}
+  
+.error-popup-bg{
+    background: #ec6b78;
+}
+
+
+::ng-deep{
+    .mat-progress-spinner circle, .mat-spinner circle {
+        stroke: white;
+    }
+}
+
+.hide-password-icon{
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.highlight-password-icon{
+    color: var(--ec-color);
+}
+
+.round-logins{
+    margin: 10px;
+    padding: 10px;
+    min-width: 15%;
+    border: 1px solid lightgray;
+    border-radius: 5%;
+    text-align: center;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.activateed-login-bg{
+    background:  var(--ec-color);
+    color: white;
+}
+
+.toaster-popup-close{
+    float: right;
+    &:hover{
+        cursor: pointer;
+    }
+}
+ */
+
+
+ /********** BOC ROACH CHANGES ****************/
+
+ body,
+ html {
+   height: 100%;
+   margin: 0;
+ }
+ 
+ .bg {
+   background-image: url("../../assets/banner-home2.jpg");
+   height: 100%;
+   background-position: center;
+   background-repeat: no-repeat;
+   background-size: cover;
+ }
+ 
+ .login-content {
+   position: absolute;
+   right: 3%;
+   top: 5%;
+ }
+ 
+ .arrow-shadow {
+   resize: horizontal;
+   position: relative;
+   border-top: 370px solid transparent;
+   border-left: 470px solid #7b7b7b91;
+   border-bottom: 370px solid transparent;
+   background: linear-gradient(#ff1313, #ff1313);
+ }
+ .arrow {
+   resize: horizontal;
+   position: absolute;
+   top: 40px;
+   left: 3%;
+   border-top: 330px solid transparent;
+   border-left: 430px solid white;
+   border-bottom: 330px solid transparent;
+   border-right: 30px solid transparent;
+   background: linear-gradient(rgba(255, 255, 255, 0.1), white);
+ }
+ .form-length {
+   width: 215px !important;
+ }
+ 
+ .login-form {
+   position: absolute;
+   top: 30%;
+   left: 7%;
+ }
+ .title {
+   font-weight: 300;
+   font-size: 21px;
+   line-height: 1;
+ }
+ 
+ .title span {
+   font-weight: 800;
+   /*letter-spacing: 3px;*/
+ }
+ 
+ .title hr {
+  width: 125px;
+  border-width: 2px;
+  border-color: #036bc0;
+  margin: 0;
+}
+ 
+ hr.short {
+   width: 50px;
+   border-width: 2px;
+   border-color: #67e2fb;
+   float: left;
+   margin: 0;
+ }
+ h1 {
+   font-family: Roboto, "Helvetica Neue", sans-serif !important;
+   font-weight: 300;
+   letter-spacing: 2px;
+   font-size: 29px;
+   margin: 10px 0px;
+ }
+ 
+ .header {
+   position: relative;
+   text-align: center;
+   background: linear-gradient(60deg, #543ab7 0%, #00acc1a8 100%);
+   color: white;
+ }
+ 
+ .inner-header {
+   height: 85vh;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+ }
+ 
+ .flex {
+   /*Flexbox for containers*/
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+ }
+ 
+ .waves {
+   position: relative;
+   width: 100%;
+   height: 15vh;
+   margin-bottom: -7px; /*Fix for safari gap*/
+   min-height: 100px;
+   max-height: 150px;
+ }
+ 
+ /* Animation */
+ 
+ .parallax > use {
+   animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+ }
+ .parallax > use:nth-child(1) {
+   animation-delay: -2s;
+   animation-duration: 7s;
+ }
+ .parallax > use:nth-child(2) {
+   animation-delay: -3s;
+   animation-duration: 10s;
+ }
+ .parallax > use:nth-child(3) {
+   animation-delay: -4s;
+   animation-duration: 13s;
+ }
+ .parallax > use:nth-child(4) {
+   animation-delay: -5s;
+   animation-duration: 20s;
+ }
+ @keyframes move-forever {
+   0% {
+     transform: translate3d(-90px, 0, 0);
+   }
+   100% {
+     transform: translate3d(85px, 0, 0);
+   }
+ }
+ 
+ /*Responsive query for respective devices starts*/
+ 
+ @media only screen and (max-width: 600px) {
+    .bg {
+      height: 86vh;
+    }
+    .login-content {
+      position: absolute;
+ 
+      right: 3% !important;
+      top: 7% !important;
+    }
+ 
+    .form-length {
+      width: 190px !important;
+    }
+    .arrow-shadow {
+      resize: horizontal;
+      position: relative;
+      border-top: 255px solid transparent;
+      border-left: 355px solid #7b7b7b91;
+      border-bottom: 255px solid transparent;
+      background: linear-gradient(#ff1313, #ff1313);
+    }
+    .arrow {
+      resize: horizontal;
+      position: absolute;
+      top: 30px;
+      left: 3%;
+      border-top: 225px solid transparent;
+      border-left: 325px solid white;
+      border-bottom: 225px solid transparent;
+      border-right: 30px solid transparent;
+      background: linear-gradient(rgba(255, 255, 255, 0.1), white);
+      // -ms-transform: rotate(90deg);
+      // transform: rotate(360deg);
+    }
+ 
+    .login-form{
+      position: absolute;
+      top: 24%;
+      left: 8%;
+ }
+ .title{
+   font-weight: 300;
+   font-size: 17px !important;
+   line-height: 1;
+ }
+ .logo-img{
+    width: 195px !important;
+ }
+    .product-title {
+      position: absolute;
+      top: 3%;
+      right: 10%;
+    }
+    .inner-header {
+      height: 84vh !important;
+    }
+ 
+    .waves {
+      height: 40px;
+      min-height: 40px;
+    }
+    .content {
+      height: 30vh;
+    }
+    h1 {
+      font-size: 15px !important;
+    }
+    .mat-raised-button{
+      padding: 0 4px !important;
+    }
+    .round-logins{
+     margin: 3px !important;
+     padding: 7px !important;
+     min-width: 15%;
+     border: 1px solid lightgray;
+     border-radius: 5%;
+     text-align: center;
+     &:hover{
+         cursor: pointer;
+     }
+ }
+ 
+ }
+ 
+ @media (max-width: 1024px) {
+   .login-content{
+     position: absolute;
+     right: 20%;
+     top: 10%;
+ }
+ .product-title {
+   position: absolute;
+   top: 3%;
+   right: 10%;
+ }
+ .logo-img{
+   width: 235px;
+ }
+ h1 {
+   font-size: 20px;
+ }
+ .inner-header {
+   height: 85vh;
+ 
+ }
+ }
+ 
+ @media (min-width: 1024px) and (max-width: 1600px) {
+ 
+   .login-content{
+     position: absolute;
+     right: 2%;
+     top: 2%;
+ }
+ 
+ .arrow-shadow{
+   resize: horizontal;
+   position: relative;
+   border-top: 320px solid transparent;
+   border-left: 420px solid #7b7b7b91;
+   border-bottom: 320px solid transparent;
+   background: linear-gradient(#ff1313, #ff1313);
+ }
+ 
+ .arrow{
+   resize: horizontal;
+   position: absolute;
+   top: 40px;
+   left: 4%;
+   border-top: 280px solid transparent;
+   border-left: 380px solid white;
+   border-bottom: 280px solid transparent;
+   border-right: 30px solid transparent;
+   background: linear-gradient(rgba(255, 255, 255, 0.1), white);
+ }
+ .product-title {
+   position: absolute;
+   margin: 0;
+   // right: 20%;
+ }
+ .logo-img{
+   width: 265px;
+ }
+ h1 {
+   font-size: 22px;
+ }
+ .inner-header {
+   height: 85vh;
+ 
+ }
+ }
+ /*Responsive query for respective devices ends*/
+ 
+
+
+.round-logins{
+    margin: 10px;
+    padding: 10px;
+    min-width: 15%;
+    border: 1px solid lightgray;
+    border-radius: 5%;
+    text-align: center;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.activateed-login-bg{
+    background:  var(--ec-color);
+    color: white;
+}
+
+
+
+/*IE 10, 11*/
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .login-content {
+    position: absolute ;
+    right: 24% !important;
+    top: 5%;
+  }
+
+  .waves{
+    display: none;
+  }
+  .inner-header {
+    height: 98vh !important;
+  }
+  .title hr {
+    display: none !important;
+  }
+  .login-form{
+    left: 11px !important;
+  }
+
+  .round-logins{
+    margin: 8px !important;
+    padding: 8px !important;
+  }
+}
+
+
+@supports (-ms-ime-align:auto) {
+  /* Edge 16+ CSS */
+  .login-content {
+    position: absolute ;
+    right: 24% !important;
+    top: 5%;
+  }
+  .title hr{
+    float: left;
+  }
+  .login-form{
+    left: 22px !important;
+  }
+  .round-logins{
+    margin: 8px !important;
+    padding: 8px !important;
+  }
+}
+  
+/**************** EOC ROACH CHANGES *************************/
+    

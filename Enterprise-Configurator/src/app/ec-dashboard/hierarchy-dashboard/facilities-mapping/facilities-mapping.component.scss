@@ -1,0 +1,48 @@
+.image-width{
+    width: 2.4rem;
+}
+
+.mobile-label {
+    display: none;
+}
+  
+@media(max-width: 768px) {
+    mat-cell{
+      padding-left: 0px !important;
+    }
+    .mobile-label {
+      width: 130px;
+      display: inline-block;
+          font-weight: bold;
+    }
+  
+    .mat-header-row {
+      display: none;
+    }
+  
+    .mat-row { 
+      flex-direction: column;
+      align-items: start;
+      padding: 8px 24px;
+    }
+}
+
+
+/***** BOC TOASETER STYLES ******/
+/* .success-popup{
+    position: absolute;
+    width: 15%;
+    padding: .5%;
+    background: #70a470;
+    color: white;
+    text-align: center;
+    right: 0%;
+    transition: all 0.4s ease;
+    box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+    z-index: 999;
+  }
+  
+  .error-popup-bg{
+    background: #ec6b78;
+  } */
+/***** EOC TOASETER STYLES ******/

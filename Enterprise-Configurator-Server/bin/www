@@ -1,0 +1,255 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+*/
+
+var app = require('../app');
+var debug = require('debug')('enterprise-configurator-server:server');
+var http = require('http');
+var models = require('../models');
+var pluginsCtrl = require('../controllers/plugins.server.controller')
+var isasCtrl = require('../controllers/isas.server.controller');
+var HierarchyCtrl = require('../controllers/heirarchy.server.controller');
+var CommonCtrl = require('../controllers/common.server.controller');
+var commonUtils = require('../utils/common.utils')
+var logger = require('../utils/winston.utils').EnterpriseLogs
+var AppConfig = require('../config/app-config')
+var server,portalKeyFile,PortalTimeIntervel;
+
+
+/**
+ * Get port from environment and store in Express.
+*/
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+
+/**** EC SERVER INITIALIZATION ****/
+console.log("## EC server was initialized")
+logger.info('--->[INITIALIZING]\t'+'EC server was initialized');
+checkForECPortalMutualKey()
+
+
+/**** CHECK FOR PORTAL MUTUAL AUTHENTICATION WITH KEY FILE ****/
+async function checkForECPortalMutualKey(){
+  console.log("## Checking for portal mutual key")
+  logger.info("Checking for portal Mutual key File");
+  portalKeyFile = await commonUtils.getPortalKeyFile()
+  if(portalKeyFile.success === true){
+    console.log("[Portal Mutual key file]\t Found")
+    logger.info("[Portal Mutual key file]\t"+JSON.stringify(portalKeyFile.response));
+    createMyServer()
+  }else{
+    console.error("## [Portal Mutual key file] :\t"+"Not found");
+    logger.error("[Portal Mutual key file]\t"+JSON.stringify(portalKeyFile.response));
+    closeMyServer()
+  }
+}
+
+
+/****** BEGING OF CREATE EC SERVER ******/
+async function createMyServer(){
+  server = http.createServer(app);
+  try{
+    models.sequelize.sync({alter:true}).then(()=> {
+      console.log("## STARTING EC SERVER")
+      server.listen(port, async()=> {
+        console.log("## EC SERVER LISTENING ON PORT :",port)
+        logger.info("EC SERVER STARTED AND LISTENING ON PORT : "+port)
+        let allDetectedPluginsInfo = await pluginsCtrl.detectAllAvailablePlugins()
+        if(allDetectedPluginsInfo && allDetectedPluginsInfo.length > 0){
+          console.log("## TOTAL PLUGINS FOUND WITH CONFIG INFO RESPONSE :",allDetectedPluginsInfo.length)
+          logger.info("[DETECT PLUGINS] \t TOTAL PLUGINS FOUND WITH CONFIG INFO RESPONSE :",allDetectedPluginsInfo.length)
+          let requiredPluginsForEC = await pluginsCtrl.checkRequiredPluginsForEC(allDetectedPluginsInfo)
+          if(requiredPluginsForEC.success === true){
+            console.log("## SUCCESSFULLY DETECTED REQUIRED PLUGINS FOR EC :",requiredPluginsForEC.response.length)
+            logger.info("SUCCESSFULLY DETECTED REQUIRED PLUGINS FOR EC : :"+requiredPluginsForEC.response.length)
+            // CHECK FOR PORTAL KEY FILE CUSTOMER ID            
+            let rootNodeAvailability = await HierarchyCtrl.checkAvailabilityOfEcRootNodeWithPortalCustomerID(portalKeyFile.response) //check for root node, if available update, if not available create
+            if(rootNodeAvailability.success === true){
+              console.log("-----------> ROOT NODE SUCESSS")
+
+              logger.info(rootNodeAvailability.response);
+              let licensePluginInitialSteps = await pluginsCtrl.doInitialStepsWithLicenseManager() // UNCAOMMENT BELOW 2 LINES once integration done
+              if(licensePluginInitialSteps.success === true){
+              // if(true){
+                // console.log("## SUCCESS OF DOING INITIAL STEPS WITH LICENSEMANAGER: ",licensePluginInitialSteps.response)
+                // logger.info("SUCCESS OF DOING INITIAL STEPS WITH LICENSE MANAGER"+licensePluginInitialSteps.response);
+                let doneWithInitialSteps = await pluginsCtrl.doInitialStepsWithSecurityPlugin(allDetectedPluginsInfo)
+                if(doneWithInitialSteps.success === true){
+                  console.log("## DONE WITH INITIAL STEPS OF EC:",doneWithInitialSteps.response)
+                  logger.info("DONE WITH INITIAL STEPS OF EC::"+JSON.stringify(doneWithInitialSteps.response))
+                  let defaultUserForEc = await isasCtrl.createDefaultUserForEc(rootNodeAvailability.response)
+                  if(defaultUserForEc.response.RegistrationResponse.ErrorCode == 422 || defaultUserForEc.response.RegistrationResponse.ErrorCode == 0){
+                    console.log("## EC STARTED SUCCESSFULLY WITH ALL THE REQUIRED STEPS, A DEFAULT USER WAS CREATED WITH ISAS")
+                  }else{
+                    console.log("## EC STARTED SUCCESSFULLY WITH ALL THE REQUIRED STEPS, SOMETHING WENT WRONG WHILE CREATING A DEFAULT USER WITH ISAS")
+                  }
+                  RegisterEcWithNotificationManager()
+                  DoSyncWithPortal()
+                }
+              }else{
+                console.log("## FAILED TO DO INITIAL STEPS WITH LICENSEMANAGER: ",licensePluginInitialSteps.response)
+                logger.error("FAILED TO DO INITIAL STEPS WITH LICENSE MANAGER"+licensePluginInitialSteps.response);
+              }
+            }else{
+              logger.error(rootNodeAvailability.response);
+              console.log("## Failed to create a root node",rootNodeAvailability.response)
+              closeMyServer()
+            }
+          }else{
+            console.log("## REQUIRED PLUGINS FOR EC NOT FOUND:",requiredPluginsForEC.response.length)
+            logger.info("REQUIRED PLUGINS FOR EC NOT FOUND :"+requiredPluginsForEC.response.length + ", CLOSING SERVER");
+            closeMyServer()
+          }
+        }else{
+          console.log("## NO PLUGINS FOUND TO BE IN ACTIVE STATE OR CONFIG FILES NOT FOUND IN SPECIFIED PATH")
+          logger.error("[DETECT PLUGINS] \t NO PLUGINS FOUND TO BE IN ACTIVE STATE OR CONFIG FILES NOT FOUND IN SPECIFIED PATH, CLOSING SERVER")
+          closeMyServer()
+        }
+      })
+      server.on('error', onError);
+    }).catch(err =>{
+      console.log("## ERROR while syncing with Sequelize:",err)
+      logger.error("Error while syncing with Sequelize"+err)
+      closeMyServer()
+    })
+  }catch(error){
+    console.log("## ERROR while Connecting DB with sequelize:",err)
+    logger.error("FAILED CREATION OF EC SERVER : "+err)
+    closeMyServer()
+  }
+}
+
+
+
+// /**** BEGING OF CHECK OF SECURITY APP ****/
+// async function checkForSecurityPlugin(){
+//   let isSecurityPluginAvailable = await isasCtrl.detectSecurityPluginAndConfigDetails()
+//   console.log(isSecurityPluginAvailable && isSecurityPluginAvailable.success === true ? '## CREATING EC SERVER' : 'CLOSING EC SERVER')
+//   if(isSecurityPluginAvailable && isSecurityPluginAvailable.success === true){
+//     logger.info("Security Plugin availability : "+isSecurityPluginAvailable.success)
+//     createMyServer(isSecurityPluginAvailable.response)
+//   }else{
+//     logger.error("Security Plugin availability : "+isSecurityPluginAvailable.success)
+//     closeMyServer()
+//   }
+// }
+
+async function RegisterEcWithNotificationManager(){
+  let registarionWithNotificationAPP =  await CommonCtrl.RegisterWithNotification(AppConfig.appNotificationAlerts.authenticationAlerts.key,AppConfig.appNotificationAlerts.authenticationAlerts.name,AppConfig.appNotificationAlerts.authenticationAlerts.priority)
+  if(registarionWithNotificationAPP.success === true){
+    console.log("## REGISTER OF EC WITH NOTIFICATION MANAGER SUCCESSFULL :",registarionWithNotificationAPP.response)
+    logger.error("[NOTIFICATION MANAGER] \t SUCCESFULLY EC REGISTERED WITH NOTIFICATION MANAGER :"+JSON.stringify(registarionWithNotificationAPP.response))
+  }else{
+    console.log("## FAILED TO REGISTER WITH NOTIFICATION MANAGER :"+JSON.stringify(registarionWithNotificationAPP.response))
+    logger.error("[NOTIFICATION MANAGER] \t FAILED TO REGISTER WITH NOTIFICATION MANAGER :"+JSON.stringify(registarionWithNotificationAPP.response))
+  }
+}
+
+
+async function DoSyncWithPortal(){
+  doPostHierarchyTreeToPortal() // one time call once EC done with its initial steps
+  if(PortalTimeIntervel){
+    clearInterval(PortalTimeIntervel);
+  }
+
+  PortalTimeIntervel = setInterval(async ()=>{
+    
+    let licensePluginInitialSteps = await pluginsCtrl.doInitialStepsWithLicenseManager() 
+    if(licensePluginInitialSteps.success === true){
+      let doneWithInitialSteps = await pluginsCtrl.doInitialStepsWithSecurityPlugin()
+      if(doneWithInitialSteps.success === true){
+        console.log("## DONE WHILE SYNCING WITH PORTAL:",doneWithInitialSteps.response)
+        logger.info("DONE WHILE SYNCING WITH PORTAL::"+JSON.stringify(doneWithInitialSteps.response))
+      }
+    }else{
+      console.log("## FAILED TO SYNCING WITH PORTAL::: ",licensePluginInitialSteps.response)
+      logger.error("FAILED TO SYNCING WITH PORTAL::"+licensePluginInitialSteps.response);
+    }
+    doPostHierarchyTreeToPortal()
+  },parseFloat(process.env.PORTAL_SYNC_INTERVAL_TIME))  
+}
+
+async function doPostHierarchyTreeToPortal(){
+    let hierarchyTree = await HierarchyCtrl.getHierarchyTreeData()
+    if(hierarchyTree.success == true){
+      logger.info("Tree data found to do a post call to portal")
+      let portalAccesstoken = await pluginsCtrl.getPortalAccesstoken()
+      if(portalAccesstoken.success === true){
+        let responseOfPortalCall = await isasCtrl.doAPostCallWithTimeIntervelToPortalWithTreeData(hierarchyTree.response.hierarchyTree, portalAccesstoken.response)
+        console.log("****************> PORTAL SYNC CALL RESPONSE:",responseOfPortalCall.success)
+        if(responseOfPortalCall.success == true){
+          logger.info("Portal response : "+responseOfPortalCall.response)
+        }else{
+          logger.error("Portal response : "+responseOfPortalCall.response)
+        }
+      }else{
+        logger.error("Get portal Accetoken response when sharuing the hierarchy tree with portal  : "+portalAccesstoken.response)
+      }
+    }else{
+      logger.error("Tree data not found/empty to do a post call to portal")
+    }
+}
+
+
+/********** CLOSE THE SERVER CONNECTION ************/
+async function closeMyServer(server){
+  console.log("SOMETHING WENT WRONG, CLOSING EC SERVER")
+  // server.close()
+  isasCtrl.closeMyECServer()
+}
+
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    case 'UnhandledPromiseRejectionWarning':
+      console.error('Server is down');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+
+

@@ -1,0 +1,62 @@
+<div mat-dialog-content>
+    <div class="success-popup" *ngIf="displayToast?.show" [ngClass]="{'error-popup-bg': displayToast.success === false}">
+        <p>{{displayToast.message}}</p>
+    </div>
+
+    
+    <div class="row justify-content-center">
+        <mat-form-field appearance="outline" class="col-lg-5 col-xl-5 col-md-6 col-6 pb-0 facility-search-box">
+            <mat-label>Search</mat-label>
+            <input matInput maxlength="128" id="nodeSearchBox" (keyup)="applyFilter($event.target.value)" placeholder="Search Nodes" id="searchFacility">
+            <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+    </div>
+    <div class="row m-0 border rounded p-1 mb-1" style="background: lightgrey;">
+        <p class="text-center" *ngIf="allSelectedHierarchyNodes?.length == 0">Please select the nodes to map <span style="color: blue;">{{modelData?.selectedMapingFacility?.Name}}</span></p>
+        <p *ngIf="allSelectedHierarchyNodes?.length > 0"><span style="color: blue;">{{modelData?.selectedMapingFacility?.Name}}</span> is going to be add under the below selected nodes :</p>
+        <br>
+        <mat-chip-list *ngIf="allSelectedHierarchyNodes?.length > 0">
+            <mat-chip *ngFor="let node of allSelectedHierarchyNodes" color="primary" selected>{{node.NodeName}}</mat-chip>
+          </mat-chip-list>
+    </div>
+    <div class="mat-elevation-z8 border mb-3">
+        <mat-table [dataSource]="dataSourceOne" matSort #TableOneSort="matSort" matSortActive="name" matSortDisableClear matSortStart="desc" [class.isMobile]="isMobile">
+    
+            <ng-container *ngFor="let column of hierarchyColumns;let i = index" [cdkColumnDef]="column.columnDef">
+              <mat-header-cell *cdkHeaderCellDef mat-sort-header>{{ column.header }}</mat-header-cell>
+              <div *ngIf="column?.columnDef == 'select';">
+                <mat-cell style="min-height: 0;"  *cdkCellDef="let row;let j = index" >
+                    <span class="mobile-label">{{ column.header }}:</span>
+                    <mat-checkbox id="selectNodeToMapFacility" (click)="$event.stopPropagation()"
+                        (change)="$event? selection.toggle(row) : 'null';selectedNode(row, getIndex(j),selection.isSelected(row))"
+                        [checked]="selection.isSelected(row)">
+                    </mat-checkbox>
+                </mat-cell>
+              </div>
+              <div *ngIf="column?.columnDef == 'icon'; else otherColumns">
+                <mat-cell style="min-height: 0;"  *cdkCellDef="let row" >
+                    <span class="mobile-label">{{ column.header }}:</span>
+                    <img [src]="'data:image/jpg;base64,' + column.cell(row)" onError="this.src='assets/icons/default-icon.png'" alt="icon" class="mr-2 image-width"> 
+                </mat-cell>
+              </div>
+              <ng-template #otherColumns>
+                <mat-cell class="d-block" style="min-height: 0;"  *cdkCellDef="let row" >
+                    <span class="mobile-label">{{ column.header }}:</span>
+                      {{ column.cell(row) }} 
+                </mat-cell>
+            </ng-template>
+
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumnsOne"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumnsOne;"></mat-row>
+        </mat-table>
+    
+        <mat-paginator [pageSize]="5" id="nodePaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+    
+</div>
+
+<div mat-dialog-actions class="facility-close-box d-flex justify-content-end">    
+    <button mat-button mat-raised-button type="button" color="primary" [disabled]="mappingSucess" (click)="addToSelectedNodes()" id="mapNodesToFacility">Add</button>
+    <button mat-button mat-raised-button type="button" color="warn" (click)="close()" id="closeMappingNodesToFacility">Close</button>
+</div>

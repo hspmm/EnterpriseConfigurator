@@ -1,0 +1,91 @@
+/* .hoverStyle{
+    &:hover{
+        background: #f1f1f1;
+      }
+}
+
+.used-plugin-color{
+  color: green !important;
+}
+.not-used-plugin-color{
+  color: red;
+} */
+
+
+
+.hoverStyle {
+  &:hover {
+    background: #f1f1f1;
+  }
+}
+
+.used-plugin-color {
+  color: green !important;
+}
+
+.not-used-plugin-color {
+  color: red;
+}
+
+.plugin_status {
+  margin: 75px 0px 20px 0px;
+
+}
+
+table.plugin_status {
+  font-family: Arial, Helvetica, sans-serif;
+  border: 2px solid #DEDEDE;
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+table.plugin_status td,
+table.plugin_status th {
+  border: 2px solid #AAAAAA;
+  padding: 13px 8px;
+}
+
+table.plugin_status tbody td {
+  font-size: 13px;
+}
+
+/* table.plugin_status tr:nth-child(even) {
+  background: #D0E4F5;
+} */
+
+table.plugin_status thead {
+  background: #D3D3D3;
+  background: -moz-linear-gradient(top, #dedede 0%, #d7d7d7 66%, #D3D3D3 100%);
+  background: -webkit-linear-gradient(top, #dedede 0%, #d7d7d7 66%, #D3D3D3 100%);
+  background: linear-gradient(to bottom, #dedede 0%, #d7d7d7 66%, #D3D3D3 100%);
+  border-bottom: 2px solid #cecece;
+}
+
+table.plugin_status thead th {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  border-left: 2px solid #cecece;
+}
+
+table.plugin_status thead th:first-child {
+  border-left: none;
+}
+
+table.plugin_status tfoot td {
+  font-size: 14px;
+}
+
+table.plugin_status tfoot .links {
+  text-align: right;
+}
+
+table.plugin_status tfoot .links a {
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+

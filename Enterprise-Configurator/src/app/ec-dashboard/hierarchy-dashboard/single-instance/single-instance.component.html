@@ -1,0 +1,7 @@
+<div class="loader-4" *ngIf="loadedPlugin">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+<iframe title="{{plugin.Name}}" [src]="singleInstancePluginUrl" height="100%" width="100%" name="iframe_a" id="pluginiframe" (load)="onLoadSuccess(singleInstancePluginUrl,$event)" (error)="onIframeLoadError($event)"  style="border:0px;height: 84.5vh;"></iframe>

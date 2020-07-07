@@ -1,0 +1,8 @@
+{
+    "env": {
+        "name": "PRODUCTION",
+        "baseUrl": "http://3.132.244.71:3000"
+    }
+    
+
+}

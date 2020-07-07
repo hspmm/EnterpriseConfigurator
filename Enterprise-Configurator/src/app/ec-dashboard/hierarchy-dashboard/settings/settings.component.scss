@@ -1,0 +1,146 @@
+/* .upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    margin-top: 15px;
+}
+.upload-btn-wrapper{
+    &:hover{
+        cursor: pointer;
+      }
+}
+  
+.upload-btn-wrapper input[type=file] {
+    &:hover{
+        cursor: pointer;
+      }
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+} */
+
+.edit-icon {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    padding-left: 5px;
+    top: 5px;
+    border: 1px solid;
+    border-radius: 5px;
+    height: 80%;
+
+}
+
+.on-hover-icon{
+    position: absolute;
+    background: lightgrey;
+    color: black;
+    text-align: center;
+    right: 0px;
+    height: 100%;
+    width: 50%;
+    padding-top: 10%;
+}
+
+.edit-icon input[type=file]{
+    position: absolute;
+    right: 0px;
+    opacity: 0;
+    height: 100%;
+    width: 50%;
+    font-size: 0px;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+
+.icon{
+    width: 25%;
+    // height: 55px;
+    /* height: 80px;
+    border: 1px solid; */
+}
+
+/* .btn {
+    border: 2px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 6px 5px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+
+} */
+
+.signIn-header{
+    background-color: var(--ec-color);
+    color: white;
+}
+
+.login-btn{
+    @extend .signIn-header;
+}
+
+.border{
+    border-color: #f2f2f2 !important;
+}
+
+/* .success-popup{
+    position: absolute;
+    width: 20%;
+    padding: .5%;
+    background: #70a470;
+    color: white;
+    text-align: center;
+    right: 0%;
+    z-index: 1;
+    // top: 20%;
+    transition: all 0.4s ease;
+    box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+  }
+  
+.error-popup-bg{
+    background: #ec6b78;
+} */
+
+
+.image-width{
+    width: 2.4rem;
+}
+
+.add-level-icon{
+    top: 15%;
+    mat-icon{
+        &:hover{
+            cursor: pointer;
+            // color: green;
+        }
+    }
+
+}
+
+.remove-level-icon{
+    top: 15%;
+    mat-icon{
+        &:hover{
+            cursor: pointer;
+        }
+    }
+}
+
+
+
+@media (max-width: 1080px) {
+    .icon{
+        width: 55% !important;
+    }
+}
+
+/* @media (min-width: 1080px) {
+    .icon{
+        width: 45% !important;
+    }
+} */

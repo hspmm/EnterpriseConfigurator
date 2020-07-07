@@ -1,0 +1,20 @@
+<div class="row py-1 px-4 align-items-center">
+  <div [formGroup]="form" class="col-12 pl-0 pr-0">
+
+    <div [ngSwitch]="question.Type" class="pl-0 pr-0">
+
+      <div *ngSwitchCase="'text'" class="col-12 pl-0 pr-0">
+        <p class="py-2" style="margin:0">{{question.Name}}</p>
+        <input class="form-control mb-2" [id]="question.key" [type]="question.Type" maxlength="128"
+          [formControlName]="question.key">
+        <div class="w-100"></div>
+      </div>
+
+      <div *ngSwitchCase="'checkbox'" class="col-12 pl-0 pr-0">
+        <mat-checkbox class="py-2 mb-2" [formControlName]="question.key" color="primary" [labelPosition]="'before'">
+          {{question.Name}}:</mat-checkbox>
+        <div class="w-100"></div>
+      </div>
+    </div>
+  </div>
+</div>

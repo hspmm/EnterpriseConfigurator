@@ -1,0 +1,127 @@
+<div mat-dialog-content>
+    <div class="success-popup" *ngIf="displayToast?.show"
+        [ngClass]="{'error-popup-bg': displayToast.success === false}">
+        <p>{{displayToast.message}}</p>
+    </div>
+
+    <h3 class="text-center col-6 offset-2 ">Facilities List</h3>
+    <div class="row m-0 justify-content-center">
+        <mat-form-field appearance="outline" class="col-lg-5 col-xl-5 col-md-6 col-6 pb-0 facility-search-box">
+            <mat-label>Search</mat-label>
+            <input matInput maxlength="128" [(ngModel)]="searchText" id="facilitySearchBox"
+                (keyup)="selectedTab == 0 ? applyFilterOne($event.target.value) : applyFilterTwo($event.target.value)"
+                placeholder="Enter">
+            <mat-icon matSuffix *ngIf="!searchText">search</mat-icon>
+            <mat-icon matSuffix class="search-close-icon" *ngIf="searchText" (click)="searchText='';clearSearch()">close
+            </mat-icon>
+        </mat-form-field>
+
+        <div class="image-upload-wrap col-lg-2 col-xl-2 col-md-3 col-4"
+            [ngClass]="{'wrong-format-file-border':wrongFormatFileUpload == true}"
+            *ngIf="userPrivileges?.canManageFacilities">
+            <input class="file-upload-input" #fileInput type="file" #fileImportInput name="File upload"
+                id="facilityCsvFileUpload" (change)="filechangeListner($event)" (click)="fileInput.value = null"
+                accept=".csv" />
+            <div class="empty-drag-text text-center h-100" *ngIf="emptyFile && !wrongFormatFileUpload">
+                <span class="align-items-center import-facilities">
+                    <mat-icon>get_app</mat-icon> Import facilities
+                </span>
+                <span class="d-none d-lg-block empty-file-text" style="word-break: break-all;">Drag and drop or
+                </span><span class="empty-file-text">click to add a file(.csv)</span>
+            </div>
+            <div class="choosen-drag-text text-center d-inline-flex align-items-center h-100"
+                *ngIf="!wrongFormatFileUpload && acceptedFileFormat">
+                <mat-icon class="text-success" style="font-size: 2.2rem;">insert_drive_file</mat-icon>
+                <span class="choosen-file-text ml-2" style="word-break: break-all;">{{choosenFileName}}</span>
+                <mat-icon color="warn" class="file-cancel" id="removeFile" (click)="fileReset()">cancel</mat-icon>
+            </div>
+            <div class="error-drag-text text-center d-inline-flex" *ngIf="wrongFormatFileUpload">
+                <mat-icon color="warn" class="error-icon">error_outline</mat-icon>
+                <span class="text-danger error-file-text"
+                    style="word-break: break-all;">{{csvFileError.status == false ? csvFileError.message : 'Please import valid .csv file'}}
+                </span>
+                <mat-icon class="text-success" style="font-size: 2.5rem;">system_update_alt</mat-icon>
+            </div>
+        </div>
+        <button id="uploadFacilities" *ngIf="(csvRecords?.length > 0) && (acceptedFileFormat === true)"
+            mat-raised-button class="app-button-color ml-1" (click)="uploadFacilities(csvRecords)">
+            <mat-icon>save_alt</mat-icon>
+            Upload Facilities
+        </button>
+    </div>
+
+
+
+    <mat-tab-group backgroundColor="primary" [selectedIndex]="selectedTab" (selectedTabChange)="onTabChanged($event);">
+        <mat-tab label="View Hierarchy Facilities" id="viewHierarchyFacilities">
+            <ng-template matTabContent>
+                <div class="mat-elevation-z8 border mb-3">
+                    <mat-table [dataSource]="dataSourceOne" matSort #TableOneSort="matSort" matSortActive="name"
+                        matSortDisableClear matSortStart="desc" [class.isMobile]="isMobile">
+
+                        <ng-container *ngFor="let column of hierarchyFacilitiesColumns;let i = index "
+                            [cdkColumnDef]="column.columnDef">
+                            <mat-header-cell class="p-0" *cdkHeaderCellDef mat-sort-header>{{ column.header }}
+                            </mat-header-cell>
+                            <mat-cell class="p-0 d-block" style="min-height: 0;" id="goToFacilityInHierarchyTree"
+                                *cdkCellDef="let row" [ngClass]="{'facility-name': column?.columnDef == 'name'}"
+                                (click)="column?.columnDef == 'name' ? goToSelectedFacility(row.id) : ''">
+                                <span class="mobile-label">{{ column.header }}:</span>
+                                {{ column.cell(row) }}
+                            </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumnsOne"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsOne;"></mat-row>
+                    </mat-table>
+
+                    <mat-paginator #TableOnePaginator="matPaginator" [pageSize]="5"
+                        [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+            </ng-template>
+        </mat-tab>
+        <mat-tab label="View Imported Facilities" id="viewImportedFacilities">
+            <ng-template matTabContent>
+                <div class="mat-elevation-z8 border mb-3">
+                    <mat-table #table [dataSource]="dataSourceTwo" matSort #TableTwoSort="matSort" matSortActive="Name"
+                        matSortDisableClear matSortStart="desc" [class.isMobile]="isMobile">
+
+                        <ng-container *ngFor="let column of importFacilitiesColumns;let i = index "
+                            [cdkColumnDef]="column.columnDef">
+                            <div *ngIf="column?.columnDef != 'Star'">
+                                <mat-header-cell class="p-0" *cdkHeaderCellDef mat-sort-header>{{ column.header }}
+                                </mat-header-cell>
+                                <mat-cell class="p-0 d-block" style="min-height: 0;" *cdkCellDef="let row">
+                                    <span class="mobile-label">{{ column.header }}:</span>
+                                    {{ column.cell(row) }}
+                                </mat-cell>
+                            </div>
+                            <div *ngIf="(column?.columnDef == 'Star')">
+                                <mat-header-cell class="p-0" *cdkHeaderCellDef>Map to hierarchy</mat-header-cell>
+                                <mat-cell class="p-0 justify-content-center" style="min-height: 0;"
+                                    *cdkCellDef="let row">
+                                    <span class="mobile-label">Map to hierarchy</span>
+                                    <button class="col-12 p-0" id="mapFacilityToHierarchyTree" mat-button
+                                        color="primary" [disabled]="!userPrivileges?.canManageFacilities"
+                                        (click)="mapfacilityTohierarchyTree(row)">
+                                        <mat-icon class="facilities-map-icon">more_vert</mat-icon>
+                                    </button>
+
+                                </mat-cell>
+                            </div>
+
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumnsTwo"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsTwo;"></mat-row>
+                    </mat-table>
+
+                    <mat-paginator #TableTwoPaginator="matPaginator" id="facilityPaginator" [pageSize]="5"
+                        [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+
+<div mat-dialog-actions class="facility-close-box d-flex justify-content-end">
+    <button mat-button mat-raised-button type="button" color="warn" (click)="close()" id="closeFacility">Close</button>
+</div>

@@ -1,0 +1,42 @@
+/* .success-popup {
+  position: absolute;
+  width: 20%;
+  padding: .5%;
+  background: #70a470;
+  color: white;
+  text-align: center;
+  right: 1%;
+  transition: all 0.4s ease;
+  box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+}
+
+.error-popup-bg {
+  background: #ec6b78;
+} */
+
+.card-form {
+  margin: 10px auto;
+  padding: 1em 2em 1em 2em;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+  box-shadow: rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px;
+}
+
+
+/* .form-length{
+  width: 230px;
+} */
+
+
+@media only screen and (max-width: 600px) {
+  .form-length{
+    width: 200px !important;
+  }
+  }
+  
+  @media (min-width: 600px) {
+  .form-length{
+    width: 220px !important;
+  }
+}

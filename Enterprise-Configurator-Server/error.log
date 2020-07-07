@@ -1,0 +1,2 @@
+{"service":"user-service","message":"helloworld","level":"error"}
+{"message":"From getIntergartionProfile","level":"error","service":"user-service"}

@@ -1,0 +1,137 @@
+<div mat-dialog-content *ngIf="plugins && plugins?.length > 0">
+  <h5 class="text-center" *ngIf="plugins?.length === 0">No plugins were detected</h5>
+  <div class="success-popup" *ngIf="displayToast?.show" [ngClass]="{'error-popup-bg': displayToast.success === false}">
+    <p>{{displayToast.message}}</p>
+  </div>
+
+  <ng-container>
+    <div class="row justify-content-center">
+      <h5 class="text-center col-12">Add an element </h5>
+      <div class="w-100"></div>
+      <br>
+      <mat-form-field class="col-6  mt-2 " appearance="outline">
+        <mat-label>Type of Service</mat-label>
+        <mat-select id="selectTypeOfService" [(ngModel)]="plugin" (ngModelChange)="selectPlugin(plugin)" id="groupsValue">
+          <ng-container *ngFor="let plugin of plugins">
+            <mat-option [value]="plugin">
+              {{plugin.Name}}
+            </mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="showNodeForm">
+    <div class="row justify-content-center ">
+      <form class=" col-11 py-2 card-form" [formGroup]="HeirarchyNodeForm" (ngSubmit)="onClickSubmit()">
+        <mat-form-field class="w-100 mb-3">
+          <input matInput placeholder="{{selectedPlugin?.Name}}" #Name maxlength="128" type="text" id="addname" name="name"
+            maxlength="128" formControlName="Name" required>
+            <mat-hint align="end">{{Name.value.length}} / 128</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field class="w-100" appearance="outline">
+          <mat-label>{{selectedPlugin?.Notes}} :</mat-label>
+          <textarea matInput type="text" id="addnotes" #Notes maxlength="256" name="notes" formControlName="Notes"></textarea>
+          <mat-hint align="end">{{Notes.value.length}} / 256</mat-hint>
+        </mat-form-field>
+        <!-------------------------- Dynamic form ---------------------------->
+
+        <form [formGroup]="AdditoinalPropertiesForm" *ngIf="additionalPropertiesFields?.length > 0">
+          <div *ngFor="let question of additionalPropertiesFields">
+            <app-dynamic-form [question]="question" [form]="AdditoinalPropertiesForm"></app-dynamic-form>
+          </div>
+        </form>
+
+        <!-------------------------- Dynamic form ---------------------------->
+
+      </form>
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="(plugins && plugins?.length > 0) && (selectedPlugin && pluginFrameUrl && showIframe)">
+    <div class="loader-4" *ngIf="showIframeLoadingSpinner">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <iframe title="{{selectedPlugin.Name}}" *ngIf="!pluginServicesDown" [src]="pluginFrameUrl" height="100%" width="100%" name="iframe_a"
+      (load)="onload(pluginFrameUrl)" (contextmenu)="onRightClick($event)" id="useriframe"
+      style="height: 60vh;border:0px;"></iframe>
+
+    <div *ngIf="pluginServicesDown" style="min-height: 60vh;">
+      <h2 class="text-center">{{selectedPlugin.Name}} services are down</h2>
+    </div>
+  </ng-container>
+
+
+  <ng-container *ngIf="showFacility">
+    <app-add-facilities [triggerToSendForm]="triggerTosendFacilityForm" (sendFacilityForm)="createFacilityForm($event)">
+    </app-add-facilities>
+    <!-------------------------- Dynamic form ---------------------------->
+
+    <!-- <form  [formGroup]="AdditoinalPropertiesForm" *ngIf="additionalPropertiesFields?.length > 0">
+        <div *ngFor="let question of additionalPropertiesFields">
+          <app-dynamic-form [question]="question" [form]="AdditoinalPropertiesForm"></app-dynamic-form>
+        </div>
+      </form> -->
+
+    <!-------------------------- Dynamic form ---------------------------->
+  </ng-container>
+</div>
+
+
+
+
+
+
+
+<div mat-dialog-content *ngIf="(!plugins || plugins?.length == 0) && (hierarchyGroupLevels && hierarchyGroupLevels.length != 0)" style="min-height:10rem;">
+  <div class="loader-4" *ngIf="!plugins">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <h2 class="text-center" *ngIf="plugins?.length == 0">No plugins found to add under <span style="color:blue;"
+      color="primary">{{data?.nodeData?.NodeName}}</span></h2>
+</div>
+
+<div mat-dialog-content *ngIf="(!plugins || plugins?.length == 0) && (hierarchyGroupLevels && hierarchyGroupLevels.length == 0)" style="min-height:10rem;">
+
+  <h3 class="text-center">To create a hierarchy tree, first please add hierarchy level groups in <span id="goToSettingPage" class="navigate-to-settings-page"(click)="goToSettingsPage()">Settings</span></h3>
+
+</div>
+
+<div mat-dialog-actions class="mat-elevation-z8 add-element-footer d-flex justify-content-end" 
+  *ngIf="selectedPlugin && pluginFrameUrl && showIframe">
+  <button mat-button mat-raised-button color="primary"
+    [disabled]="pluginServicesDown === true || showIframeLoadingSpinner === true" class="app-button-color" type="button"
+    (click)="sendMsgToPluginToSaveToHierarchy(selectedPlugin)" id="submitRegion">
+    <span *ngIf="!showProgressSpinner">Add</span>
+    <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;">
+    </mat-spinner>
+  </button>
+  <button mat-button mat-raised-button type="button" (click)="close()" color="warn" id="cancelRegion">Cancel</button>
+</div>
+<div mat-dialog-actions  class="mat-elevation-z8 add-element-footer d-flex justify-content-end" *ngIf="showFacility">
+  <button mat-button mat-raised-button color="primary" class="app-button-color" type="button"
+    [disabled]="!facilityFormValid" (click)="triggerFacilityFormTosendData()" id="addFacility">
+    <span *ngIf="!showProgressSpinner">Add</span>
+    <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;">
+    </mat-spinner>
+  </button>
+  <button mat-button mat-raised-button type="button" color="warn" (click)="close()">Cancel</button>
+</div>
+<div mat-dialog-actions  class="mat-elevation-z8 add-element-footer d-flex justify-content-end" *ngIf="showNodeForm">
+  <button mat-button mat-raised-button color="primary" class="app-button-color" type="button"
+    [disabled]="!HeirarchyNodeForm.valid" (click)="onClickSubmit()" id="submitRegion">
+    <span *ngIf="!showProgressSpinner">Add</span>
+    <mat-spinner *ngIf="showProgressSpinner" style="margin:0 auto;zoom:0.2;position:absolute;bottom:18%;right: 23%;">
+    </mat-spinner>
+  </button>
+  <button mat-button mat-raised-button type="button" color="warn" id="cancelRegion" (click)="close()">Cancel</button>
+</div>

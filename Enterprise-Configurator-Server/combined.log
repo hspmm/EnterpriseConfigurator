@@ -1,0 +1,10 @@
+{"service":"user-service","message":"helloworld","level":"error"}
+{"message":"From getIntergartionProfile","level":"error","service":"user-service"}
+{"message":"From getIntergartionProfile","level":"info","service":"user-service"}
+{"message":"From getIntergartionProfile","level":"info","service":"user-service"}
+{"message":"From getIntergartionProfile","level":"info","service":"user-service"}
+undefined
+undefined
+{"@message":"From getIntergartionProfile","@fields":{"level":"info","service":"user-service"}}
+{"@message":"From getIntergartionProfile","@fields":{"level":"info","service":"user-service"}}
+{"@message":"From getIntergartionProfile","@fields":{"level":"info","service":"user-service"}}

@@ -1,0 +1,218 @@
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .example-container {
+    height: 400px;
+    overflow: auto;
+  }
+  .example-table-container {
+    position: relative;
+    max-height: 400px;
+    overflow: auto;
+  }
+
+  .facility-name{
+      color: #007bff !important;
+      &:hover{
+        cursor: pointer;
+        color: blue !important;
+        text-decoration: underline !important;
+      }
+  }
+
+  ::ng-deep{
+    .facility-search-box .mat-form-field-wrapper{
+        padding: 0 !important;
+    }
+    .search-box{
+      .mat-form-field{
+        line-height: 1;
+      }
+  
+      .mat-form-field-infix{
+        border-top: .5em solid transparent;
+        padding-bottom: .7em;
+        padding-top: 0.6em;
+      }
+
+    } 
+  
+  }
+
+
+  /***** BOC Drag Drop CSV file styles ****/
+  .import-facilities {
+    width: 100%;
+    display: flex;
+    /* text-align: center; */
+    justify-content: center;
+  }
+
+  .file-upload-input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    opacity: 0;
+    cursor: pointer;
+    left: 0;
+  }
+  
+  .image-upload-wrap {
+    border: 4px dashed #1FB264;
+    position: relative;
+    &:hover{
+      background-color: #1FB264;
+      .choosen-drag-text .choosen-file-text{
+        color: white !important;       
+      }
+      .empty-drag-text .empty-file-text{
+        color: white !important;       
+      }
+      .file-upload-input{
+        cursor: pointer;
+      }
+      mat-icon{
+        cursor: pointer;
+        color: white !important;
+      }
+      .file-cancel{
+        color: red !important;
+      }
+    }
+  }
+
+  .file-cancel{
+    position: absolute;
+    right: 0px;
+  } 
+
+  
+  .image-title-wrap {
+    padding: 0 15px 15px 15px;
+    color: #222;
+  }  
+
+  .empty-drag-text .empty-file-text {
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #15824B;
+  }
+  .choosen-drag-text .choosen-file-text {
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #15824B;
+  }
+  .error-drag-text .error-file-text {
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #15824B;
+  }
+
+  
+  .file-upload-image {
+    max-height: 200px;
+    max-width: 200px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .wrong-format-file-border{
+    border: 4px dashed red !important;
+    &:hover{
+      background-color: transparent !important;
+      .error-icon{
+        color: red !important;
+      }
+      .text-success{
+        color: #15824B !important;
+      }
+    }
+  }
+  /***** EOC Drag Drop CSV file styles ****/
+
+  .facilities-map-icon{
+    &:hover{
+      cursor: pointer;
+    }
+  }
+
+  .mobile-label {
+    display: none;
+  }
+  
+  @media(max-width: 768px) {
+    mat-cell{
+      padding-left: 0px !important;
+    }
+    .mobile-label {
+      width: 130px;
+      display: inline-block;
+          font-weight: bold;
+    }
+  
+    .mat-header-row {
+      display: none;
+    }
+  
+    .mat-row { 
+      flex-direction: column;
+      align-items: start;
+      padding: 8px 24px;
+    }
+  }
+
+  .facility-tabs{
+    &:hover{
+      cursor: pointer;
+      @extend .selected-tab
+      
+    }
+  }
+
+  .selected-tab{
+    background-color: #036bc0!important;
+    color: white;
+  }
+
+  .mat-cell{
+    border-right: 1px solid #dee2e6;
+    align-self: stretch;
+  }
+  .mat-header-cell{
+    border-right: 1px solid #dee2e6;
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .mat-dialog-content{
+    max-height:75vh;
+  }
+
+/***** BOC TOASETER STYLES ******/
+/*   .success-popup{
+    position: absolute;
+    width: 15%;
+    padding: .5%;
+    background: #70a470;
+    color: white;
+    text-align: center;
+    right: 0%;
+    transition: all 0.4s ease;
+    box-shadow: 0px 0px 10px -1px rgba(0, 0, 0, 0.75);
+    z-index: 999;
+  }
+  
+  .error-popup-bg{
+    background: #ec6b78;
+  } */
+/***** EOC TOASETER STYLES ******/
+ 

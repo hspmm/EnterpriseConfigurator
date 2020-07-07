@@ -1,0 +1,9 @@
+{
+    "TEST-AUTO-EC-001" : {
+        "requiremmet" : "The enterprise console testmanager should launch the login page in browser",
+        "test-cases":[
+            
+        ]
+    }
+   
+}

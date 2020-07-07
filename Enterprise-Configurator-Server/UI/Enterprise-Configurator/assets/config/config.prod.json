@@ -1,0 +1,8 @@
+{
+    "env": {
+        "name": "PRODUCTION",
+        "baseUrl": "http://localhost:3000"
+    }
+    
+
+}
